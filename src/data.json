@@ -1,10 +1,10 @@
 {
-    "name": "Start Here",
+    "name": "Project Name...",
     "children": [
       {
-        "name": "Edit Task 1",
+        "name": "Task 1...",
         "children": [
-          { "name": "Edit SubTask 1" }
+          
         ]
       }
     ]

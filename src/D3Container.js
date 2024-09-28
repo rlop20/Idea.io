@@ -75,7 +75,7 @@ const D3Component = () => {
 
         // Add the '+' sign for each node to allow adding children
         nodeEnter.append('text')
-          .attr('y', 30)
+          .attr('y', 50)
           .attr('text-anchor', 'middle')
           .attr('font-size', '24px')
           .attr('cursor', 'pointer')
@@ -146,7 +146,7 @@ const D3Component = () => {
         const input = parent.append('foreignObject')
           .attr('x', bbox.x - 3)
           .attr('y', bbox.y - 3)
-          .attr('width', bbox.width + 6)
+          .attr('width', bbox.width + 16) // changing this controls the box when clicking text
           .attr('height', bbox.height + 6)
           .append('xhtml:input')
           .attr('style', `width: ${bbox.width + 6}px;`)
