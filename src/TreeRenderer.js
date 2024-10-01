@@ -8,26 +8,41 @@ export class TreeRenderer {
     this.data = data;
     this.setData = setData;
     this.i = 0;
+
+    // Bind methods to ensure they retain the correct context
+    this.initializeTree = this.initializeTree.bind(this);
+    this.update = this.update.bind(this);
+    this.addChildNode = this.addChildNode.bind(this);
+    this.deleteNode = this.deleteNode.bind(this);
+    this.setSelectedNode = this.setSelectedNode.bind(this);
+
     this.initializeTree();
   }
 
   initializeTree() {
     d3.select(this.container).selectAll("*").remove();
-
+  
     this.svg = d3.select(this.container)
       .attr('width', 960)
       .attr('height', 500)
       .append('g')
       .attr('transform', 'translate(120,20)');
-
+  
+    // Add listener to unselect node when clicking on empty space
+    d3.select(this.container)
+      .on('click', () => {
+        this.setSelectedNode(null); // Unselect when clicking on empty space
+      });
+  
     this.root = d3.hierarchy(this.data);
     this.root.x0 = 250;
     this.root.y0 = 0;
-
+  
     this.treeLayout = d3.tree().size([500, 800]);
-
+  
     this.update(this.root);
   }
+  
 
   update(source) {
     const treeData = this.treeLayout(this.root);
@@ -39,20 +54,25 @@ export class TreeRenderer {
     const node = this.svg.selectAll('g.node')
       .data(nodes, d => d.id || (d.id = ++this.i));
 
-    const nodeEnter = node.enter().append('g')
+      const nodeEnter = node.enter().append('g')
       .attr('class', 'node')
-      .attr('transform', d => `translate(${source.y0},${source.x0})`);
-
-    // Add circle for each node
-    nodeEnter.append('circle')
-      .attr('class', 'node')
-      .attr('r', 10)
-      .attr('fill', d => d._children ? "lightsteelblue" : "#fff")
-      .attr('stroke', d => d._children ? "steelblue" : "lightsteelblue")
+      .attr('transform', d => `translate(${source.y0},${source.x0})`)
       .on('click', (event, d) => {
-        toggleNode(d);
+        event.stopPropagation(); // Prevent the container click handler from firing
+        this.setSelectedNode(d); // Set selected node on single-click
+      })
+      .on('dblclick', (event, d) => {
+        event.stopPropagation(); // Prevent the container click handler from firing
+        toggleNode(d); // Toggle children on double-click
         this.update(d);
       });
+    
+// Add circle for each node
+nodeEnter.append('circle')
+  .attr('class', 'node')
+  .attr('r', 10)
+  .attr('fill', d => d === this.selectedNode ? "#89CFF0" : (d._children ? "lightsteelblue" : "#fff"))
+  .attr('stroke', d => d._children ? "steelblue" : "lightsteelblue");
 
     // Add text for each node
     nodeEnter.append('text')
@@ -66,33 +86,15 @@ export class TreeRenderer {
         editNodeText(d, event.target);
       });
 
-    // Add "+" sign to add child nodes
-    nodeEnter.append('text')
-      .attr('y', 50)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '24px')
-      .attr('cursor', 'pointer')
-      .text('+')
-      .on('click', (event, d) => {
-        event.stopPropagation();
-        this.addChildNode(d);
-      });
-
-    // Add "x" sign to delete the node
-    nodeEnter.append('text')
-      .attr('y', -20)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '16px')
-      .attr('cursor', 'pointer')
-      .text('x')
-      .on('click', (event, d) => {
-        event.stopPropagation();
-        this.deleteNode(d);
-      });
-
     const nodeUpdate = nodeEnter.merge(node);
+
+    // Update nodes to reflect correct color and position
     nodeUpdate.transition().duration(750)
       .attr('transform', d => `translate(${d.y},${d.x})`);
+
+      // Update nodes to reflect correct color and position
+nodeUpdate.select('circle')
+.attr('fill', d => d === this.selectedNode ? "#89CFF0" : (d._children ? "lightsteelblue" : "#fff"));
 
     node.exit().transition().duration(750)
       .attr('transform', d => `translate(${source.y},${source.x})`)
@@ -127,7 +129,14 @@ export class TreeRenderer {
     });
   }
 
-  addChildNode(parentNode) {
+  addChildNode() {
+    if (!this.selectedNode) {
+      console.error("No node selected to add a child to.");
+      return;
+    }
+
+    const parentNode = this.selectedNode;
+
     if (!parentNode.data.children) {
       parentNode.data.children = [];
     }
@@ -142,19 +151,29 @@ export class TreeRenderer {
     this.update(parentNode);
   }
 
-  deleteNode(nodeToDelete) {
-    // Find and remove the node from its parent's children array
+  deleteNode() {
+    if (!this.selectedNode) {
+      console.error("No node selected to delete.");
+      return;
+    }
+
+    const nodeToDelete = this.selectedNode;
     const parent = nodeToDelete.parent;
+
     if (parent) {
       parent.data.children = parent.data.children.filter(child => child !== nodeToDelete.data);
     } else {
-      // If the node to delete is the root, do nothing or handle accordingly
       console.error("Cannot delete the root node.");
       return;
     }
 
-    // Update the data and visualize the changes
     this.setData({ ...this.data });
     this.update(parent);
+  }
+
+  setSelectedNode(node) {
+    this.selectedNode = node;
+    console.log("Selected node:", node);
+    this.update(this.root); // Update the tree to reflect the selected node visually
   }
 }
