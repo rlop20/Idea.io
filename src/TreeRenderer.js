@@ -21,28 +21,21 @@ export class TreeRenderer {
 
   initializeTree() {
     d3.select(this.container).selectAll("*").remove();
-  
+
     this.svg = d3.select(this.container)
       .attr('width', 960)
       .attr('height', 500)
       .append('g')
       .attr('transform', 'translate(120,20)');
-  
-    // Add listener to unselect node when clicking on empty space
-    d3.select(this.container)
-      .on('click', () => {
-        this.setSelectedNode(null); // Unselect when clicking on empty space
-      });
-  
+
     this.root = d3.hierarchy(this.data);
     this.root.x0 = 250;
     this.root.y0 = 0;
-  
+
     this.treeLayout = d3.tree().size([500, 800]);
-  
+
     this.update(this.root);
   }
-  
 
   update(source) {
     const treeData = this.treeLayout(this.root);
@@ -54,37 +47,45 @@ export class TreeRenderer {
     const node = this.svg.selectAll('g.node')
       .data(nodes, d => d.id || (d.id = ++this.i));
 
-      const nodeEnter = node.enter().append('g')
+    const nodeEnter = node.enter().append('g')
       .attr('class', 'node')
       .attr('transform', d => `translate(${source.y0},${source.x0})`)
       .on('click', (event, d) => {
-        event.stopPropagation(); // Prevent the container click handler from firing
+        event.stopPropagation();
         this.setSelectedNode(d); // Set selected node on single-click
       })
       .on('dblclick', (event, d) => {
-        event.stopPropagation(); // Prevent the container click handler from firing
+        event.stopPropagation();
         toggleNode(d); // Toggle children on double-click
         this.update(d);
       });
-    
-// Add circle for each node
-nodeEnter.append('circle')
-  .attr('class', 'node')
-  .attr('r', 10)
-  .attr('fill', d => d === this.selectedNode ? "#89CFF0" : (d._children ? "lightsteelblue" : "#fff"))
-  .attr('stroke', d => d._children ? "steelblue" : "lightsteelblue");
 
-    // Add text for each node
-    nodeEnter.append('text')
-      .attr('d', '.35em')
-      .attr('x', d => d.children || d._children ? -13 : 13)
-      .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
-      .text(d => d.data.name)
-      .attr('cursor', 'pointer')
-      .on('click', (event, d) => {
-        event.stopPropagation();
-        editNodeText(d, event.target);
-      });
+    // Add circle for each node
+    nodeEnter.append('circle')
+      .attr('class', 'node')
+      .attr('r', 10)
+      .attr('fill', d => d === this.selectedNode ? "#89CFF0" : (d._children ? "lightsteelblue" : "#fff"))
+      .attr('stroke', d => d._children ? "steelblue" : "lightsteelblue");
+
+// Add foreignObject for dynamic text rendering
+nodeEnter.append('foreignObject')
+  .attr('x', -75)
+  .attr('y', 15)
+  .attr('width', 150)
+  .attr('height', 100)
+  .append('xhtml:div')
+  .attr('class', 'node-text-box')
+  .style('overflow', 'auto')
+  .style('height', '100%')
+  .style('width', '100%')
+  .style('font-size', '12px')
+  .style('color', 'black')
+  .text(d => d.data.name)
+  .on('click', (event, d) => {
+    event.stopPropagation();
+    editNodeText(d, event.target); // Enable editing on text click
+  });
+
 
     const nodeUpdate = nodeEnter.merge(node);
 
@@ -92,9 +93,8 @@ nodeEnter.append('circle')
     nodeUpdate.transition().duration(750)
       .attr('transform', d => `translate(${d.y},${d.x})`);
 
-      // Update nodes to reflect correct color and position
-nodeUpdate.select('circle')
-.attr('fill', d => d === this.selectedNode ? "#89CFF0" : (d._children ? "lightsteelblue" : "#fff"));
+    nodeUpdate.select('circle')
+      .attr('fill', d => d === this.selectedNode ? "#89CFF0" : (d._children ? "lightsteelblue" : "#fff"));
 
     node.exit().transition().duration(750)
       .attr('transform', d => `translate(${source.y},${source.x})`)
@@ -167,13 +167,13 @@ nodeUpdate.select('circle')
       return;
     }
 
+    this.setSelectedNode(null); // Clear the selected node reference
     this.setData({ ...this.data });
-    this.update(parent);
+    this.update(this.root);
   }
 
   setSelectedNode(node) {
     this.selectedNode = node;
-    console.log("Selected node:", node);
     this.update(this.root); // Update the tree to reflect the selected node visually
   }
 }

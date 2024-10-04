@@ -1,25 +1,35 @@
 .d3-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-    user-select: none; /* Disable text selection for the entire container */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
 
-  }
-  
-  .button-container {
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* Adds space between the two buttons */
-  }
-  
-  .center-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-  }
+.dropdown-container {
+  margin-bottom: 20px;
+}
 
-  svg text {
-    user-select: none; /* Specifically target text elements within the SVG */
-  }
+.select-dropdown {
+  padding: 5px 10px;
+  font-size: 16px;
+}
+
+.button-container {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Adds space between the two buttons */
+}
+
+.center-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.node-text-box {
+  padding: 5px;
+  box-sizing: border-box;
+  max-height: 100px; /* Ensure max-height, so the scroll bar appears if needed */
+  overflow: auto; /* Add scroll if text is too large */
+}
