@@ -109,7 +109,7 @@ const D3Component = () => {
 
   return (
     <div className="d3-container">
-      <h1>idea.io</h1>
+      <h1>Mind Flow</h1>
       
       {/* Dropdown for selecting a project */}
       <div className="dropdown-container">
