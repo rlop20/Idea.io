@@ -12,3 +12,11 @@ A repo for the Idea.io App and website.
 - run firebase login 
 - run firebase init, select hosting, and type build for public directory, enter N for all overwrites.
 - run firebase deploy.
+
+# GitHub integration 
+- Copy the project into your machine.
+- open the project in VS code.
+* WORK IN A NEW BRANCH!! * 
+- git add . (to add changes)
+- git commit -m "" (to add a note *required*)
+- git push 

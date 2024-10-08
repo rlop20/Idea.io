@@ -13,26 +13,38 @@ export function editNodeText(d, textElement) {
   const bbox = textElement.getBoundingClientRect();
   const container = document.body;
 
-  // Calculate the width and height based on the bounding box
-  const inputWidth = bbox.width + 20; // Add some extra space to match visual padding
-  const inputHeight = bbox.height + 10; // Add extra height to ensure the text fits vertically
-
   // Create an input element and position it over the text element
   const input = document.createElement('textarea');
   input.value = currentValue;
   input.style.position = 'absolute';
   input.style.left = `${bbox.left + window.scrollX}px`;
   input.style.top = `${bbox.top + window.scrollY}px`;
-  input.style.width = `${inputWidth}px`; // Set input width based on calculated value
-  input.style.height = `${inputHeight}px`; // Set input height based on calculated value
+  input.style.width = `${bbox.width + 20}px`; // Ensure the width is slightly larger than the text box
   input.style.fontSize = '12px';
   input.style.padding = '4px';
   input.style.zIndex = 1000;
   input.style.border = '1px solid #ccc';
   input.style.boxSizing = 'border-box';
-  input.style.resize = 'none'; // Prevent resizing by user
-
+  input.style.resize = 'none'; // Disable manual resizing by the user
+  input.style.overflow = 'hidden'; // Hide overflow initially
+  
+  // Ensure the text wraps inside the textarea
+  input.style.whiteSpace = 'pre-wrap'; // Make sure text wraps
+  input.style.wordWrap = 'break-word'; // Break long words if necessary
+  
   container.appendChild(input);
+
+  // Auto-resize the textarea based on the text content
+  const resizeTextArea = () => {
+    input.style.height = 'auto'; // Reset the height so it can shrink on content removal
+    input.style.height = `${input.scrollHeight}px`; // Set height to match content
+  };
+
+  // Call resize function immediately to set the initial size
+  resizeTextArea();
+
+  // Add event listener to resize the textarea when the user types or modifies content
+  input.addEventListener('input', resizeTextArea);
 
   // Focus the input for editing
   input.focus();

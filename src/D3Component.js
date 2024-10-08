@@ -111,6 +111,10 @@ const D3Component = () => {
     <div className="d3-container">
       <h1>Mind Flow</h1>
       
+      <h3>Click on Text to edit</h3>
+      <h3>Click on circles to expand/contract</h3>
+
+
       {/* Dropdown for selecting a project */}
       <div className="dropdown-container">
         <label htmlFor="project-select">Select Project: </label>
@@ -143,17 +147,13 @@ const D3Component = () => {
           Rename Project
         </button>
       </div>
-
-      <h3>Click on Text to edit</h3>
-      <h3>Click on circles to expand/contract</h3>
-
       {/* Centered Buttons */}
       <div className="button-container">
         <button className="center-button" onClick={() => treeRendererRef.current && treeRendererRef.current.addChildNode()}>
-          Add Node
+          Add
         </button>
         <button className="center-button" onClick={() => treeRendererRef.current && treeRendererRef.current.deleteNode()}>
-          Remove Node
+          Remove
         </button>
       </div>
 

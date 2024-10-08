@@ -1,10 +1,13 @@
 .d3-container {
+  width: 100%;
+  min-height: 100vh; /* At least the full viewport height */
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  margin-top: 20px;
+  padding: 20px;
+  box-sizing: border-box;
 }
-
 .dropdown-container {
   margin-bottom: 20px;
 }
@@ -16,9 +19,6 @@
 
 .button-container {
   margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  gap: 20px; /* Adds space between the two buttons */
 }
 
 .center-button {
@@ -27,9 +27,31 @@
   cursor: pointer;
 }
 
+/* Disable text selection for the node text elements */
 .node-text-box {
-  padding: 5px;
-  box-sizing: border-box;
-  max-height: 100px; /* Ensure max-height, so the scroll bar appears if needed */
-  overflow: auto; /* Add scroll if text is too large */
+  user-select: none; /* Prevents text selection */
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none; /* For Firefox */
+  -ms-user-select: none; /* For older IE/Edge */
+}
+
+/* Disable text selection for button text */
+button {
+  user-select: none; /* Prevents text selection */
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none; /* For Firefox */
+  -ms-user-select: none; /* For older IE/Edge */
+}
+
+svg {
+  width: 100%;
+  height: auto;
+  overflow: visible; /* Ensure that overflow is visible, so content isn't cut off */
+}
+
+body, html {
+  user-select: none; /* Prevent text selection on the entire page */
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none; /* For Firefox */
+  -ms-user-select: none; /* For older IE/Edge */
 }
